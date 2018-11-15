@@ -1,0 +1,119 @@
+```{r}
+install.packages("microbenchmark")
+library(microbenchmark)
+```
+
+#Q1: Problem 1 from Activity 9
+** Original codes:**
+```{r}
+odd_count = function(x) {
+  odd_num = 0
+  for(i in 1:length(x)) {
+    if(x[i] %% 2 == 1) 
+      odd_num  = odd_num+1
+  }
+  return(odd_num)
+}
+```
+**My codes: **
+```{r}
+odd_count_new = function(x) {
+  return (sum(x %% 2))
+}
+```
+**TEST: **
+```{r}
+x <- c(1,2,3,4,5,6,7,8,9)
+odd_count(x)
+odd_count_new(x)
+microbenchmark(odd_count(x), odd_count_new(x))
+```
+
+#Q2: Modify sort_vect function:
+Modify the sorting function (sort_vec) from "Assignment 8" (problem 3) so that it should take an
+additional argument ascending which causes sorting in increasing order when 'ascending = TRUE'. In
+other words,
+. sort_vect(c(3, 1, 2), ascending = TRUE) = (1, 2, 3)
+. sort_vect(c(3, 1, 2), ascending = FALSE) = (3, 2, 1)
+```{r}
+sort_vec = function(x, ascending) {
+  
+  if (length(x) < 2) return (x)
+  if(ascending==TRUE){
+    for(last in length(x):2) {
+    for(first in 1:(last - 1)) {
+      if(x[first] > x[first + 1]) {
+        temp = x[first]
+        x[first] = x[first + 1]
+        x[first + 1] = temp
+      }
+    }
+  }
+  }else{
+    for(last in length(x):2) {
+    for(first in 1:(last - 1)) {
+      if(x[first] < x[first + 1]) {
+        temp = x[first]
+        x[first] = x[first + 1]
+        x[first + 1] = temp
+      }
+    }
+  }
+  }
+  
+return(x)
+} 
+##TEST:
+test_sort <- c(3, 2, 1, 5, 4)
+sort_vec(test_sort, TRUE)
+sort_vec(test_sort, FALSE)
+```
+#Q3: 
+Consider a simple random walk with starting point 0 and a step -1 or 1. Below is the code with
+dynamically allocated memory. Write your code with preallocated memory and compare time for both
+versions using system.time() function (use N = 1000, 10000 and 1000000).
+```{r}
+#Given Codes:
+test_original_codes <- function(N){
+  data_series = 0
+  time <- system.time({for (i in 2:N){
+  data_series[i] = data_series[i-1] + sample(c(-1, 1), 1)
+  }
+  })
+  return (time)
+}
+
+```
+
+```{r}
+#My Codes:
+test_new_codes <- function(N){
+  set.seed(123)
+  steps <- sample(c(-1, 1), N, replace = TRUE)
+  data_series = 0
+  time <- system.time({for (i in 2:N){
+  data_series[i] = data_series[i-1] + steps[i-1]
+  }
+  })
+  return (time)
+}
+```
+
+```{r}
+#TEST:
+N1 <- 1000
+N2 <- 10000
+N3 <- 1000000
+test1 <- c(test_original_codes(N1), test_new_codes(N1))
+test2 <- c(test_original_codes(N2), test_new_codes(N2))
+test3 <- c(test_original_codes(N3), test_new_codes(N3))
+test1
+test2
+test3
+```
+
+
+
+
+
+
